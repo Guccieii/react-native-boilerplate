@@ -2,11 +2,36 @@ import React, { Component } from 'react';
 import { SafeAreaView } from 'react-native';
 import { Router, Stack, Scene, Tabs } from 'react-native-router-flux';
 
+//Localizations
+import { withLocalize } from 'react-localize-redux';
+import globalTranslations from './utils/translations.json';
+import * as RNLocalize from 'react-native-localize';
+
 //Views
 import Splash from './views/Splash';
 import CustomTabBar from './components/CustomTabBar';
 
 class Main extends Component {
+	constructor(props) {
+		super(props);
+
+		//Localizations init
+		this.props.initialize({
+			languages: [ { name: 'English', code: 'US' }, { name: 'Italian', code: 'IT' } ],
+			translation: globalTranslations,
+			options: { renderToStaticMarkup: false }
+		});
+
+		//Check if the device languages is supported and change the app language, or use English
+		var deviceLang = 'US';
+		switch (RNLocalize.getCountry()) {
+			case 'US': deviceLang = 'US'; break;
+			case 'IT': deviceLang = 'IT'; break;
+			default: deviceLang = 'US'; break;
+		}
+		this.props.setActiveLanguage(deviceLang)
+	}
+
 	render() {
 		return (
 			<SafeAreaView style={{ flex: 1 }}>
@@ -24,4 +49,4 @@ class Main extends Component {
 	}
 }
 
-export default Main;
+export default withLocalize(Main);
